@@ -28,10 +28,10 @@ jobs:
           # 指定輸出的檔案格式與樣式（可設定配色）
           outputs: |
             # 標準 SVG 版本
-            dist/github-snake.svg?color_snake=skyblue
-
+            dist/github-snake.svg?color_snake=#87CEEB
+            
             # 暗色主題版本
-            dist/github-snake-dark.svg?palette=github-dark&color_snake=skyblue
+            dist/github-snake-dark.svg?palette=github-dark&color_snake=#87CEEB
 
             # 動態 GIF 版本
             dist/ocean.gif?color_snake=skyblue&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9
