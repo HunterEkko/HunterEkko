@@ -1,27 +1,51 @@
+# workflow 名稱，會顯示在 GitHub Actions 頁面上
 name: Generate Snake Animation
 
+# 設定觸發條件
 on:
+  # 每天的 00:00 自動執行（使用 UTC 時區）
   schedule:
-    - cron: "0 0 * * *"  # 每天執行一次
-  workflow_dispatch:     # 也允許手動觸發
+    - cron: "0 0 * * *"
+  # 允許手動執行 workflow（從 GitHub 網頁介面點擊觸發）
+  workflow_dispatch:
+
+# ✅ 新增這段：允許 GitHub Actions 有「寫入權限」，才能推送 commit
+permissions:
+  contents: write
 
 jobs:
   generate:
+    # 在最新版的 Ubuntu Runner 上執行這個工作
     runs-on: ubuntu-latest
+
     steps:
+      # 第一步：使用 Platane/snk 套件產生貢獻動畫（SVG/GIF）
       - uses: Platane/snk@v3
         with:
-          github_user_name: ${{ github.repository_owner }}  # 👈 這裡填你的 GitHub 使用者名稱
+          # 指定要產生貢獻圖動畫的 GitHub 帳號
+          github_user_name: ${{ github.repository_owner }}
 
+          # 指定輸出的檔案格式與樣式（可設定配色）
           outputs: |
+            # 標準 SVG 版本
             dist/github-snake.svg
+
+            # 暗色主題版本，套用 github-dark 配色
             dist/github-snake-dark.svg?palette=github-dark
+
+            # 動態 GIF 版本，蛇為橘色，點點有不同層級顏色（從低到高貢獻）
             dist/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9
 
+      # 第二步：使用 crazy-max 的 GitHub Pages Action 將產出檔案推送到 output 分支
       - name: Push to GitHub
         uses: crazy-max/ghaction-github-pages@v3
         with:
+          # 要推送的目標分支（這裡用 output 分支）
           target_branch: output
+
+          # 要推送的資料夾（就是 snk 輸出的 dist 資料夾）
           build_dir: dist
+
         env:
+          # 使用 GitHub 自動產生的 token 來驗證與推送
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
